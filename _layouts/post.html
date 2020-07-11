@@ -27,28 +27,52 @@ comments: true
 <br>
 <h4>Share this:</h4>
 {% include share-bar.html %}
+<h2>Sign Up for our Newsletter</h2>
 
-{% if page.comments %}
-<div id="disqus_thread"></div>
+<form id="addComment">
+  <label for="userName">Username:</label><br>
+  <input type="text" id="userName" name="userName" value=""><br>
+  <label for="email">Email:</label><br>
+  <input type="email" id="email" name="email" value=""><br><br>
+  <label for="text">Comment:</label><br>
+  <input type="text" id="text" name="text" value=""><br><br>
+  <input type="submit" value="Submit">
+</form> 
+
+</body>
+</html>
 <script>
-  /**
-  *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
-  var disqus_config = function () {
-    this.page.url = "{{ site.url | relative_url }}";  // Replace PAGE_URL with your page's canonical URL variable
-    this.page.identifier = "{{ page.url | relative_url }}"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-  };
+window.addEventListener("load", function() {
+  function getData() {
+    var formData = new FormData(form);
+    const obj = {};
+    for (const pair of formData.entries()) {
+      obj[pair[0]] = pair[1];
+    }
+    
+    obj.blogUid = '{{ page.blogUid }}';
+    console.log("obj ::", obj);
 
-  (function () { // DON'T EDIT BELOW THIS LINE
-    var d = document, s = d.createElement('script');
-    s.src = 'https://https-themythicalengineer-com.disqus.com/embed.js';
-    s.setAttribute('data-timestamp', +new Date());
-    (d.head || d.body).appendChild(s);
-  })();
+    return obj;
+  }
+  
+  function handleClick(data) {
+    const xhr = new XMLHttpRequest();
+    const url = 'https://stopandthinkbackend.herokuapp.com/'
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify(data));
+    // event.preventDefault(); // disable normal form submit behavior
+    return false; // prevent further bubbling of event
+  }
+
+  var form = document.getElementById("addComment");
+
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+    const data = getData();
+    handleClick(data)
+  });
+
+});
 </script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by
-    Disqus.</a></noscript>
-
-<div id="disqus_thread"></div>
-{% endif %}
-<script id="dsq-count-scr" src="//stopandthink-in.disqus.com/count.js" async></script>
